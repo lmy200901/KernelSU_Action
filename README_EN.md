@@ -1,135 +1,200 @@
 # KernelSU Action
 
-Action for Non-GKI Kernel has some common and requires knowledge of kernel and Android to be used.
+This action is for Non-GKI Kernels and has some universality and requires knowledge of the kernel and Android.
 
-## Warning:warning: :warning: :warning:
+## Warning :warning::warning::warning:
 
-If you are not a kernel author and use someone else's source code to build KernelSU, please use it for your own use only and do not share it with others, it is respectful to the author.
+If you are not the author of the Kernel, and are using someone else's labor to build KernelSU, please use it for personal use only and do not share it with others. This is to show respect for the author's labor achievements.
 
-## Support Kernel
+## Supported Kernel Versions
 
+- `5.4`
 - `4.19`
 - `4.14`
+- `4.9`
 
 ## Usage
 
-First fork this repo, then click on action, you will see the `Build Kernel` option, click on the option and you will see a dialog box on the right hand side with `Run workflows` in it, there are configurations that you need to type, see the section below to understand how to type them in.
+> All variables in the `config.env` file are only checked for `true`.
 
-Or use config.env(set USE_CONFIG to true), edit config.env and commit it, click star or run workflows, this function is convenient for the phone to modify the parameters.
+> Once the compilation is successful, AnyKernel3 will be uploaded in the `Action` and the device check has been disabled. Please flash it in TWRP.
 
-### Build Kernel
+Fork this repository to your storage account and edit the `config.env` file with the following content. Afterward, click `Star` or `Action`. On the left side, you can see the `Build Kernel` option. Click on it, and you will find the `Run workflows` option above the dialog. Click on it to start the build.
 
-After successful build, it will upload AnyKernel3 in `Action`, which has turned off device check, please flash to phone in Twrp.
+### Kernel Source
 
-#### Kernel Source
+Change this to your Kernel repository address.
 
-Type your kernel link
+For example - https://github.com/Diva-Room/Miku_kernel_xiaomi_wayne
 
-e.g. https://github.com/Diva-Room/Miku_kernel_xiaomi_wayne
+### Kernel Source Branch
 
-#### Kernel Source Branch
+Change this to your Kernel branch.
 
-Type your kernel branch
+For example - TDA
 
-e.g. TDA
+### Kernel Config
 
-#### Kernel defconfig
+Change this to your kernel configuration file name.
 
-Type your kernel defconfig
+For example: `vendor/wayne_defconfig`
 
-e.g. vendor/wayne_defconfig
+### Arch
 
-#### Kernel file
+For example: arm64
 
-Type in the image you need, usually the same as BOARD_KERNEL_IMAGE_NAME in your aosp-device tree.
+### Kernel Image Name
 
-e.g. Image.gz-dtb
+Change this to the kernel binary that needs to be flashed, generally consistent with `BOARD_KERNEL_IMAGE_NAME` in your AOSP device tree.
 
-#### Clang version
+For example: `Image.gz-dtb`
 
-Type the version of Clang you need to use
-| Clang version | Corresponding Android version | AOSP-Clang version |
+Common names include `Image`, `Image.gz`.
+
+### Clang
+
+#### Use custom clang
+
+You can use a non-official clang such as [proton-clang](https://github.com/kdrag0n/proton-clang).
+
+#### Custom Clang Source
+
+> Fill in a link that includes `.git` if it is a git repository.
+
+Git repository or direct chain of compressed zip files is supported.
+
+#### Custom cmds
+
+If you're using custom clang, you should be able to modify these settings on your own. :)
+
+#### Clang Branch
+
+Due to [#23](https://github.com/xiaoleGun/KernelSU_Action/issues/23), we provide an option to customize the Google main branch. The main ones include:
+| Clang Branch |
+| ------------ |
+| master |
+| master-kernel-build-2021 |
+| master-kernel-build-2022 |
+
+Or other branches, please search for them according to your own needs at https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86.
+
+#### Clang Version
+
+Enter the Clang version to use.
+
+| Clang Version | Corresponding Android Version | AOSP-Clang Version |
 | ------------- | ----------------------------- | ------------------ |
-| 12.0.5 | Android S | r416183b |
-| 14.0.6 | Android T | r450784d |
-| 14.0.7 | | r450784e |
-| 15.0.1 | | r458507 |
+| 12.0.5        | Android S                     | r416183b           |
+| 14.0.6        | Android T                     | r450784d           |
+| 14.0.7        |                               | r450784e           |
+| 15.0.1        |                               | r458507            |
+| 17.0.1        |                               | r487747b           |
+| 17.0.2        | Android U                     | r487747c           |
 
-Usually Clang12 will pass most kernel builds of 4.14 and above.
-My own MI 6X 4.19 is using r450784d.
+Generally, Clang12 can compile most of the 4.14 and above kernels. My MI 6X 4.19 uses r450784d.
 
-#### Extra build commands
+### GCC
 
-Some kernels require some build commands to be typed in manually in order to build properly, so please don't type them in if you don't need to.
-Separate commands with spaces.
+#### Enable GCC 64
 
-e.g. LLVM=1 LLVM_IAS=1
+Enable GCC 64C cross-compiler.
 
-#### Disable LTO
+#### Enable GCC 32
 
-This is used to optimize the kernel, but sometimes it causes errors, so it is provided that it can be disabled, set to true to disable.
+Enable GCC 32C cross-compiler.
 
-#### Use KernelSU
+### Extra cmds
 
-For debug kernel or build it separately
+Some kernels require additional compilation commands to compile correctly. Generally, no other commands are needed, so please search for information about your kernel. Please separate the command and the command with a space.
 
-#### Use Kprobes
+For example: `LLVM=1 LLVM_IAS=1`
 
-If your kernel Kprobes is working properly, changing this to "true" will automatically add the parameter to defconfig.
+### Disable LTO
 
-### Build boot image
+LTO is used to optimize the kernel but sometimes causes errors.
 
-After a successful build, boot-su.img will be uploaded in `Action` and flashed to the phone using fastboot.
+### Enable KernelSU
 
-#### Kernel Source
+Enable KernelSU for troubleshooting kernel failures or compiling the kernel separately.
 
-Type your kernel link
+#### KernelSU Branch or Tag
 
-e.g. https://github.com/Diva-Room/Miku_kernel_xiaomi_wayne
+[KernelSU 1.0 no longer supports non-GKI kernels](https://github.com/tiann/KernelSU/issues/1705). The last supported version is [v0.9.5](https://github.com/tiann/KernelSU/tree/v0.9.5), please make sure to use the correct branch.
 
-#### Branch
+Select the branch or tag of KernelSU:
 
-Type your kernel branch
+- ~~main branch (development version): `KERNELSU_TAG=main`~~
+- Latest TAG (stable version): `KERNELSU_TAG=v0.9.5`
+- Specify the TAG (such as `v0.5.2`): `KERNELSU_TAG=v0.5.2`
 
-e.g. TDA
+#### KernelSU Manager signature size and hash
 
-#### Kernel Build Config
+Customize the size and hash values of the KernelSU manager signature, if you don't need to customize the manager then please leave them empty or fill in the official default values:
 
-Type your kernel build config link
+`KSU_EXPECTED_SIZE=0x033b`
 
-e.g. https://raw.githubusercontent.com/xiaoleGun/KernelSU_action/main/configs/build.config.wayne
+`KSU_EXPECTED_HASH=c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6`
 
-There is not much you need to change in there, here is a comparison between the build config and the BoardConfig/BoardConfigCommon in the device tree.
-| build config | BoardConfig/BoardConfigCommon |
-| ------------------------- | ----------------------------- |
-| DEFCONFIG | TARGET_KERNEL_CONFIG |
-| BOOT_IMAGE_HEADER_VERSION | BOARD_BOOT_HEADER_VERSION |
-| BASE_ADDRESS | BOARD_KERNEL_BASE |
-| PAGE_SIZE | BOARD_KERNEL_PAGESIZE |
-| KERNEL_CMDLINE | BOARD_KERNEL_CMDLINE |
-| MKBOOTIMG_EXTRA_ARGS | BOARD_MKBOOTIMG_ARGS |
-| KERNEL_BINARY | BOARD_KERNEL_IMAGE_NAME |
+You can type `ksud debug get-sign <apk_path>` to get the size and hash of the apk signature.
 
-Here's what some of the options in the build config do
-| build config | do |
-| --------------------- | -----------------------------------|
-| VENDOR_RAMDISK_BINARY | ramdisk path |
-| ARCH | Architecture arm/arm64/x86_64 |
-| BUILD_BOOT_IMG | Create boot image for 1 |
-| SKIP_VENDOR_BOOT | Skip create vendor_boot for 1 |
-| FILES | Need out files |
-| CLANG_VERSION | Define clang version |
+### Add Kprobes Config
 
-More to visits [build/build.sh](https://android.googlesource.com/kernel/build/+/refs/heads/master-kernel-build-2022/build.sh)
+Inject parameters into the defconfig automatically.
 
-### Boot image to get ramdisk
+### Add overlayfs Config
 
-Provide a boot image that will boot successfully, with the same kernel source code and the same device tree as your current system built from aosp, the ramdisk contains the partition table and init, without which it may reboot to fastboot.
+This parameter provides support for the KernelSU module and system partition read and write. Inject parameters into Defconfig automatically.
 
-e.g. https://raw.githubusercontent.com/xiaoleGun/KernelSU_action/main/boot/boot-wayne-from-Miku-UI-latest.img
+### Apply KernelSU Patch
 
-## Credits
+If kprobe does not work in your kernel (may be an upstream or kernel bug below 4.8), then you can try enabling this parameter
+
+Automatically modify kernel source code to support KernelSU  
+See also: [Intergrate for non-GKI devices](https://kernelsu.org/guide/how-to-integrate-for-non-gki.html#manually-modify-the-kernel-source)
+
+### Remove unused packages
+
+To clean unnecessary packages and free up more disk space.If you need these packages, please disable this option.
+
+### AnyKernel3
+
+#### Use custom AnyKernel3
+
+Can use custom AnyKernel3
+
+#### Custom AnyKernel3 Source
+
+> If it is a git repository, please fill in the link containing `.git`
+
+Supports direct links to git repositories or zip compressed packages
+
+#### AnyKernel3 Branch
+
+Customize the warehouse branch of AnyKernel3
+
+### Enable ccache
+
+Enable the cache to make the second kernel compile faster. It can reduce the time by at least 2/5.
+
+### Need DTBO
+
+Upload DTBO. Some devices require it.
+
+### Build Boot IMG
+
+> Added from previous workflows, view historical commits
+
+Build boot.img, and you need to provide a `Source boot image`.
+
+### Source Boot Image
+
+As the name suggests, it provides a boot image source system that can boot normally and requires a direct chain, preferably from the same kernel source and AOSP device tree as your current system. Ramdisk contains the partition table and init, without which the compiled image will not boot up properly.
+
+For example: https://raw.githubusercontent.com/xiaoleGun/KernelSU_action/main/boot/boot-wayne-from-Miku-UI-latest.img
+
+## Thanks
 
 - [AnyKernel3](https://github.com/osm0sis/AnyKernel3)
 - [AOSP](https://android.googlesource.com)
 - [KernelSU](https://github.com/tiann/KernelSU)
+- [xiaoxindada](https://github.com/xiaoxindada)
